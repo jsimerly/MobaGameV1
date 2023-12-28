@@ -41,3 +41,20 @@ def get_hexagons_in_radius(self, center_axial: (int, int), radius:int) -> []:
 
     return hexagons
 
+def axial_to_cube(axial_cord):
+    q, r = axial_cord
+    x = q
+    z = r
+    y =  -x - z
+    return (x, y, z)
+
+def cube_distance(cube1, cube2):
+    x1, y1, z1 = cube1
+    x2, y2, z2 = cube2
+    return max(abs(x1-x2), abs(y1-y2), abs(z1-z2))
+
+def hex_distance(axial1, axial2):
+    cube1 = axial_to_cube(axial1)
+    cube2 = axial_to_cube(axial2)
+    return cube_distance(cube1, cube2)
+

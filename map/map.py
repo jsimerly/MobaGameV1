@@ -2,9 +2,12 @@ import pygame as pg
 import math        
 from settings import LIGHT_GREY, SCREEN_WIDTH, SCREEN_HEIGHT
 from typing import List
-from utils import get_hex_verticies, cube_to_pixel
+from utils import get_hex_verticies, cube_to_pixel, hex_distance
 from combat import AttackComponent
+from team import Team
 
+pg.font.init()
+font = pg.font.SysFont(None, 24)
 class HexTile:     
     def __init__(
             self, 
@@ -17,7 +20,7 @@ class HexTile:
         self.is_occupied = False
         self.character = None
         self.structure = None
-        self.color = LIGHT_GREY
+        self.color = (123,182,101)
 
         self.axial_cord = axial_cord
         self.cube_cord = cube_cord
@@ -25,7 +28,7 @@ class HexTile:
 
         self.draw()
         
-    radius = 25
+    radius = 32
     width = radius * math.sqrt(3)
     height = radius * 2
     outline_thickness = 2
@@ -40,18 +43,19 @@ class HexTile:
     
     def draw(self):
         verticies = get_hex_verticies(self.center_pixel_pos, radius=HexTile.radius)
-        pg.draw.polygon(self.screen, self.color, verticies, self.outline_thickness)
-
+        pg.draw.polygon(self.screen, self.color, verticies)
+        pg.draw.polygon(self.screen, LIGHT_GREY, verticies, self.outline_thickness)
             
 class HexMap:
-    GRID_RADIUS = 8
+    GRID_RADIUS = 9
 
-    def __init__(self, screen: pg.display, map_structures):
+    def __init__(self, screen: pg.display, map_structures, power_sources:list):
         self.screen = screen
         self.map_structures = map_structures
         self.tiles = {}
         self.generate_grid()
         self.place_structures()
+        self.power_sources = self.place_power_sources(power_sources)
 
     def get_pixel_pos_axial(self, axial_cord, radius):
         q, r = axial_cord
@@ -98,8 +102,7 @@ class HexMap:
 
                 # Get the center tile for the structure
                 center_tile = self.tiles[axial_cord]
-                print(self)
-                structure_instance = structure_obj(tile=center_tile, game_map=self)
+                structure_instance = structure_obj(tile=center_tile, game_map=self, **obj_params)
                 structure_size = structure_instance.size
 
                 # Get all hexagons within the specified radius
@@ -111,6 +114,16 @@ class HexMap:
                         tile = self.tiles[hex_axial]
                         tile.set_structure(structure_instance)
 
+    def place_power_sources(self, power_sources):
+        all_power_sources = []
+        for obj_params in power_sources:
+            axial_cord = obj_params['axial_cord']
+            center_tile = self.tiles[axial_cord]
+            power_sources_instance = PowerSource(tile=center_tile, game_map=self, **obj_params)
+            all_power_sources.append(power_sources_instance)
+
+        return all_power_sources
+
 class MapStructure:
     def __init__(
             self, 
@@ -119,73 +132,118 @@ class MapStructure:
             tile: HexTile,
             game_map: HexMap,
             destructable: bool,
+            axial_cord: (int, int)
         ):
         self.is_pass_through = is_pass_through
         self.size = size 
         self.tile = tile
         self.game_map = game_map
         self.destructable = destructable
+        self.axial_cord = axial_cord
         self.color = (194, 43, 75)
 
     def draw(self):
         if self.size > 1:
             # Find all hexagons within the structure's size radius
-            hexagons = self.game_map.get_hexagons_in_radius(self.tile.axial_cord, self.size - 1)
+            hexagons = self.game_map.get_hexagons_in_radius(self.axial_cord, self.size - 1)
             for hex_axial in hexagons:
                 if hex_axial in self.game_map.tiles:
                     hex_tile = self.game_map.tiles[hex_axial]
                     vertices = get_hex_verticies(hex_tile.center_pixel_pos, HexTile.radius)
                     pg.draw.polygon(hex_tile.screen, self.color, vertices)
-        else:
-            # Draw just the single hexagon
-            vertices = get_hex_verticies(self.tile.center_pixel_pos, HexTile.radius)
-            pg.draw.polygon(self.tile.screen, self.color, vertices)
+
+        vertices = get_hex_verticies(self.tile.center_pixel_pos, HexTile.radius)
+        pg.draw.polygon(self.tile.screen, self.color, vertices)
 
         
 
 #Map Elements
-class IndestructableTree(MapStructure):
-    def __init__(self, tile: HexTile, game_map: HexMap):
-        super().__init__(is_pass_through=False, size=1, tile=tile, destructable=False, game_map=game_map)
-        self.color = (30, 56, 35)
+class IndestructableRock(MapStructure):
+    def __init__(self, tile: HexTile, game_map: HexMap, axial_cord:(int, int)):
+        super().__init__(is_pass_through=False, size=1, tile=tile, destructable=False, game_map=game_map, axial_cord=axial_cord)
+        self.color = (58,50,50)
         self.draw()
 
 class DestructableTree(MapStructure):
-    def __init__(self, tile: HexTile, game_map: HexMap):
-        super().__init__(is_pass_through=False, size=1, tile=tile, destructable=True,  game_map=game_map)
+    def __init__(self, tile: HexTile, game_map: HexMap, axial_cord:(int, int)):
+        super().__init__(is_pass_through=False, size=1, tile=tile, destructable=True,  game_map=game_map, axial_cord=axial_cord)
         self.health = 1
-        self.color = (38, 115, 53)
+        self.color = (20, 51, 6)
         self.draw()
     
 class Water(MapStructure):
-    def __init__(self, tile: HexTile, game_map: HexMap):
-        super().__init__(is_pass_through=True, size=1, tile=tile, destructable=False,  game_map=game_map)
+    def __init__(self, tile: HexTile, game_map: HexMap, axial_cord:(int, int)):
+        super().__init__(is_pass_through=True, size=1, tile=tile, destructable=False,  game_map=game_map, axial_cord=axial_cord)
         self.color = (152, 216, 227)
         self.draw()
 
 class Brush(MapStructure):
-    def __init__(self, tile: HexTile, game_map: HexMap):
-        super().__init__(is_pass_through=True, size=1, tile=tile, destructable=False,  game_map=game_map)
+    def __init__(self, tile: HexTile, game_map: HexMap, axial_cord:(int, int)):
+        super().__init__(is_pass_through=True, size=1, tile=tile, destructable=False,  game_map=game_map, axial_cord=axial_cord)
         self.color = (130, 148, 67)
         self.draw()
 
+    def adjust_transparency(self, color, alpha):
+        r, g, b = color
+        return (r,g,b,alpha)
+
+    def draw(self):      
+        hexagons = self.game_map.get_hexagons_in_radius(self.axial_cord, self.size - 1)
+        for hex_axial in hexagons:
+            print(hexagons)
+            if hex_axial in self.game_map.tiles:
+                hex_tile = self.game_map.tiles[hex_axial]
+
+                alpha = 185
+                adjusted_color = self.adjust_transparency(self.color, alpha)
+
+                temp_surface = pg.Surface((HexTile.width, HexTile.height), pg.SRCALPHA)
+                vertices = get_hex_verticies((HexTile.width//2, HexTile.height//2), HexTile.radius)
+
+                pg.draw.polygon(temp_surface, adjusted_color, vertices)
+
+                top_left_x = hex_tile.center_pixel_pos[0] - HexTile.width // 2
+                top_left_y = hex_tile.center_pixel_pos[1] - HexTile.height // 2
+                top_left_pos = (top_left_x, top_left_y)
+
+                self.tile.screen.blit(temp_surface, top_left_pos)
+                    
 #Buildings    
 class MainBase(MapStructure):
-    def __init__(self, tile: HexTile, game_map: HexMap):
-        super().__init__(is_pass_through=False, size=2, tile=tile, destructable=True, game_map=game_map)
+    def __init__(self, tile: HexTile, game_map: HexMap, axial_cord:(int, int), team:Team):
+        super().__init__(
+            is_pass_through=False, 
+            size=2, 
+            tile=tile, 
+            destructable=True, 
+            game_map=game_map, 
+            axial_cord=axial_cord
+        )
         self.health = 1000
         self.color = (171, 209, 202)
+        self.team = team
+        self.color = team.color
         self.draw()
 
 class Turret(MapStructure):
-    def __init__(self, tile: HexTile, damage: (int, int), attack_range: int, game_map: HexMap):
-        super().__init__(is_pass_through=False, size=1, tile=tile, destructable=True, game_map=game_map)
+    def __init__(self, tile: HexTile, damage: (int, int), attack_range: int, game_map: HexMap, axial_cord:(int, int), team:Team):
+        super().__init__(
+            is_pass_through=False, 
+            size=1, 
+            tile=tile, 
+            destructable=True, 
+            game_map=game_map,
+            axial_cord=axial_cord,
+        )
+
         self.health = 200
         self.attack_component = AttackComponent()
         self.attack_charged = True
         self.damage = damage
         self.attack_range = attack_range
         self.color = (207, 208, 209)
+        self.team = team
+        self.color = team.color
         self.draw()
 
     def attack(self):
@@ -198,3 +256,46 @@ class Turret(MapStructure):
 
     def charge_attack(self):
         self.attack_charged = True
+
+
+class PowerSource:
+    def __init__(self, tile:HexTile, turn:int, radius:int, power:int, axial_cord: (int, int), game_map: HexMap):
+        self.tile = tile
+        self.axial_cord = axial_cord
+        self.radius = radius
+        self.power = power
+        self.color = (179, 86, 184)
+        self.turn = turn
+        self.game_map = game_map
+        self.draw()
+
+    def adjust_transparency(self, color, alpha):
+        r, g, b = color
+        return (r,g,b,alpha)
+    
+    def draw(self):
+        if self.radius > 1:
+            hexagons = self.game_map.get_hexagons_in_radius(self.tile.axial_cord, self.radius - 1)
+            for hex_axial in hexagons:
+                if hex_axial in self.game_map.tiles:
+                    hex_tile = self.game_map.tiles[hex_axial]
+
+                    distance = hex_distance(self.axial_cord, hex_axial)
+                    alpha = max(10, 185 - distance * 30)
+                    adjusted_color = self.adjust_transparency(self.color, alpha)
+
+                    # Create a new surface with per-pixel alpha
+                    temp_surface = pg.Surface((HexTile.width, HexTile.height), pg.SRCALPHA)
+                    vertices = get_hex_verticies((HexTile.width//2, HexTile.height//2), HexTile.radius)
+                    
+                    # Draw on the temporary surface
+                    pg.draw.polygon(temp_surface, adjusted_color, vertices)
+
+                    top_left_x = hex_tile.center_pixel_pos[0] - HexTile.width // 2
+                    top_left_y = hex_tile.center_pixel_pos[1] - HexTile.height // 2
+                    top_left_pos = (top_left_x, top_left_y)
+
+                    self.tile.screen.blit(temp_surface, top_left_pos)
+
+        vertices = get_hex_verticies(self.tile.center_pixel_pos, HexTile.radius)
+        pg.draw.polygon(self.tile.screen, self.color, vertices)
