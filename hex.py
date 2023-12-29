@@ -1,7 +1,12 @@
-from math import sqrt, radians, cos, sin
+from math import sqrt, radians, cos, sin, pi
 import pygame
-from typing import List
+from typing import List, Tuple
 
+
+cube_direction_vectors = [
+    (-1, 0, 1), (0, -1, 1), (1, -1, 0),
+    (1, 0, -1), (0, 1, -1), (-1, 1, 0)
+]
 class Hex:
     def __init__(self, q:int, r:int, s:int = None) -> None:        
         #(q, r, s) 
@@ -55,15 +60,9 @@ class Hex:
     def distance_to(self, other) -> int:
         return self.magnitude(self-other)
     
-    cube_direction_vectors = [
-        (-1, 0, 1), (0, -1, 1), (1, -1, 0),
-        (1, 0, -1), (0, 1, -1), (-1, 1, 0)
-    ]
-
-    @classmethod
-    def direction(cls, direction):
+    def direction(self, direction):
         if -6 <= direction <= 5:
-            return cls(**cls.cube_direction_vectors[direction])
+            return Hex(*cube_direction_vectors[direction])
         raise ValueError("direction must be between -5 to 5")
     
     def neighbor(self, direction):
@@ -188,6 +187,151 @@ class Layout:
             vertex = Point(p.x + offset.x, p.y + offset.y)
             verticies.append(vertex)
         return verticies
+    
+    def parallelogram(self, width: Tuple[int, int], height: Tuple[int,int], shape:str) -> List[Hex]:
+        if shape not in ['skew-left', 'diamond', 'skew-right']:
+            raise ValueError('parallelograms shape need to be either "skew-left", "diamond", or "skew-right"')
+        
+        #could be quicker if I put logic check outside but this is cleaner and shouldn't cause performance issues.
+        hexes = []
+        for i in range(width[0], width[1]):
+            for j in range(height[0], height[1]):
+                if shape == 'skew-left':
+                    hex = Hex(i, j, -i-j)
+                if shape == 'diamond':
+                    hex = Hex(j, -i-j, i)
+                if shape == 'skew-right':
+                    hex = Hex(-i-j, j, i)
+                hexes.append(hex)
+        return hexes
+    
+    def triangle(self, edge_length:int, orientation:str) -> List[Hex]:
+        if orientation not in ['top', 'bottom']:
+            raise ValueError('triangle orientation needs to be either "top" or "bottom"')
+
+        hexes = []
+        if orientation == 'bottom':
+            for q in range(0, edge_length):
+                for r in range(0, edge_length - q):
+                    hex = Hex(q, r, -q-r)
+                    hexes.append(hex)
+        elif orientation == 'top':
+            for q in range(0, edge_length):
+                for r in range(0, q + 1):
+                    hex = Hex(q, -q + r, -r)
+                    hexes.append(hex)
+        return hexes
+    
+    def hexagon(self, radius:int, tri_center:bool=False) -> List[Hex]:
+        if radius < 1:
+            raise ValueError('radius of hexagon must be greater than 0')
+        hexes = []
+        #radius is subtracted by 1 to make inputs more intuitive for size
+        radius -= 1
+        #offset is used if I want the center to be 3 hexagons instead of a central single hexagon.
+        offset = 2 if tri_center else 1
+        print(offset)
+        for q in range(-radius, radius + offset):
+            r1 = max(-radius, -q - radius)
+            r2 = min(radius, -q + radius) + offset
+            for r in range(r1,r2):
+                hex = Hex(q, r, -q-r)
+                hexes.append(hex)
+        return hexes
+    
+    def tri(self, radius:int) -> List[Hex]:
+        hexes = []
+
+        for n in range(radius):
+            hex1 = Hex(0, -n, n)
+            hex2 = Hex(n, 0, -n)
+            hex3 = Hex(-n, n, 0) 
+
+            hexes.extend((hex1, hex2, hex3))
+
+        return hexes
+    
+    #this in theory is possible to scale using triginometric interpolation, but it likely won't be used. If I need it in the future I will build it.
+    def swirl_3(self, left_swirl=True) -> List[Hex]:
+        hexes = []
+
+        b=0
+        for n in range(3):
+            if n > 1:
+                b = 1
+
+            if left_swirl:
+                hex1 = Hex(0-b, -n+b, n)
+                hex2 = Hex(n, 0-b, -n+b)
+                hex3 = Hex(-n+b, n, 0-b)
+            else:
+                hex1 = Hex(0+b, -n, n-b)
+                hex2 = Hex(n-b, 0+b, -n)
+                hex3 = Hex(-n, n-b, 0+b)
+
+            hexes.extend((hex1, hex2, hex3))
+
+        return hexes
+
+    def ring(self, radius):
+        if radius < 1:
+            raise ValueError('ring radius needs to be greater than 1')
+        hexes = []
+        radius -= 1 #to make it more intuitive
+        hex = Hex(*cube_direction_vectors[0]) * radius
+
+        for i in range(6):
+            for j in range(radius):
+                hexes.append(hex)
+                hex = hex.neighbor(i)
+        return hexes
+    
+    def rectangle(self, width:int, height:int, odd=False) -> List[Hex]:
+        hexes = []
+        for r in range(height):
+            # Adjust the offset for each row based on the stagger type
+            r_offset = r // 2 if odd else (r + 1) // 2
+
+            for q in range(-r_offset, width - r_offset):
+                hex = Hex(q, r, -q - r)
+                hexes.append(hex)
+        return hexes
+
+    def trapazoid(self, top_length:int, bottom_length:int, height:int) -> List[Hex]:
+        if top_length > bottom_length:
+            raise ValueError("Top length must be less than or equal to bottom length")
+        
+        hexes = []
+        dw =  bottom_length - top_length
+        start_q = -dw // 2
+
+        for row in range(height):
+            row_length = top_length + min(row, dw)
+
+            for col in range(row_length):
+                q = start_q + col
+                r = row
+                hex = Hex(q, r, -q-r)
+                hexes.append(hex)
+
+            if row < dw:
+                start_q -= 1
+        return hexes
+
+
+
+    def snowflake(self):
+        pass
+ 
+    
+
+
+
+  
+                
+        
+        
+        
 
 
 
