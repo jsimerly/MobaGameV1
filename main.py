@@ -13,7 +13,7 @@ team_2 = Team(color=(138, 166, 181))
 
 # game_map = HexMap(screen=screen, map_structures=map_1, power_sources=power_sources)
 
-orientation = layout_pointy
+orientation = orientation_pointy
 size = Point(30, 30)
 origin = Point(SCREEN_WIDTH//2, SCREEN_HEIGHT//2)
 layout = Layout(orientation=orientation, size=size, origin=origin)

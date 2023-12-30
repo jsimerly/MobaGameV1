@@ -148,8 +148,7 @@ class Hex:
         for _ in range(n_rotations):
             self.rotate_60(counter)
         return self
-
-        
+       
 
 class Orientation:
     def __init__(self, f0, f1, f2, f3, b0, b1, b2, b3, start_angle) -> None:
@@ -168,13 +167,13 @@ class Orientation:
         self.b3 = b3
         self.start_angle = start_angle
 
-layout_pointy = Orientation(
+orientation_pointy = Orientation(
         sqrt(3), sqrt(3)/2, 0, 3/2,
         sqrt(3)/3, -1/3, 0, 2/3,
         30
     )
 
-layout_flat = Orientation(
+orientation_flat = Orientation(
     3/2, 0, sqrt(3)/2, sqrt(3),
     2/3, 0, -1/3, sqrt(3)/3,
     0.0
@@ -216,8 +215,6 @@ class Layout:
         y = (M.f2 * hex.q + M.f3 * hex.r) * self.size.y
         return Point(x + self.origin.x, y + self.origin.y)
     
-
-
     #returns a floating hex location that needs to be converted to target an real hex
     def pixel_to_hex(self, p: Point) -> Hex:
         M = self.orientation
@@ -368,7 +365,7 @@ class Layout:
         radius -= 1 #to make it more intuitive when using the function for abilities
         hex = Hex(*cube_direction_vectors[0]) * radius
 
-        for i in range(-4,0):
+        for i in range(6):
             for _ in range(radius): 
                 hexes.append(hex)
                 hex = hex.neighbor(i)
