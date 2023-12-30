@@ -4,16 +4,39 @@ from typing import List, Dict, Type, Callable
 
 EventHandler = Callable[[MovementEventBase], None]
 
+class Edge:
+    def __init__(self, 
+            hex1: Hex, 
+            hex2: Hex, 
+            is_passable: bool, 
+            is_directional: bool, 
+            is_los: bool, 
+            color: (int, int, int)
+        ):
+        self.hex1 = hex1
+        self.hex2 = hex2
+        self.is_passable = is_passable
+        self.is_directional = is_directional
+        self.is_los = is_los
+        self.color = color
+
+    def check_passability(self, from_hex):
+        if self.is_directional and from_hex == self.hex2:
+            return False
+        return self.is_passable
+    
 class GameTile(Hex):
     def __init__(self, q: int, r: int, 
             surface_color: (int, int, int), #RGB
             terrian_type,
+
             sprites = None,
             character = None,
-            structure = None, 
+            structure = None,
+            edges = [], 
 
-            passable:bool = True,
-            los:bool = False,
+            is_passable:bool = True,
+            is_los:bool = True,
 
             event_handlers: Dict[Type[MovementEventBase], List[EventHandler]] = {
                 OnEnterEvent: [],
@@ -25,12 +48,14 @@ class GameTile(Hex):
             super().__init__(q, r)
             self.surface_color = surface_color
             self.terrian_type = terrian_type
+
             self.sprites = sprites
             self.character = character
             self.structure = structure
+            self.edges = edges
 
-            self.passable = passable
-            self.los = los
+            self.is_passable = is_passable
+            self.is_los = is_los
             self.event_handlers = event_handlers
 
 
