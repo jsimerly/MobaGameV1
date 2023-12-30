@@ -18,7 +18,7 @@ size = Point(30, 30)
 origin = Point(SCREEN_WIDTH//2, SCREEN_HEIGHT//2)
 layout = Layout(orientation=orientation, size=size, origin=origin)
 
-hexes = layout.rectangle(6, 6)
+hexes = layout.ring(3)
 
 is_running = True
 while is_running:

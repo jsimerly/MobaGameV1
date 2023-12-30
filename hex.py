@@ -2,7 +2,6 @@ from math import sqrt, radians, cos, sin, pi
 import pygame
 from typing import List, Tuple
 
-
 cube_direction_vectors = [
     (-1, 0, 1), (0, -1, 1), (1, -1, 0),
     (1, 0, -1), (0, 1, -1), (-1, 1, 0)
@@ -33,10 +32,22 @@ class Hex:
         return not self.__eq__(other)
     
     def __add__(self, other):
-        return Hex(self.q + other.q, self.r + other.r, self.s + other.s)
-    
+        if isinstance(other, Hex):
+            return Hex(self.q + other.q, self.r + other.r, self.s + other.s)
+
+        if isinstance(other, tuple) and len(other) == 3:
+            return Hex(self.q + other[0], self.r + other[1], self.s + other[2])
+
+        return NotImplemented
+
     def __sub__(self, other):
-        return Hex(self.q - other.q, self.r - other.r, self.s - other.s)
+        if isinstance(other, Hex):
+            return Hex(self.q - other.q, self.r - other.r, self.s - other.s)
+
+        if isinstance(other, tuple) and len(other) == 3:
+            return Hex(self.q - other[0], self.r - other[1], self.s - other[2])
+
+        return NotImplemented
     
     def __mul__(self, other):
         if isinstance(other, Hex):
@@ -45,6 +56,9 @@ class Hex:
         if isinstance(other, (int, float)):
             #Other = k when it's a scalar value
             return Hex(self.q * other, self.r * other, self.s * other)
+        
+        if isinstance(other, tuple) and len(other) == 3:
+            return Hex(self.q * other[0], self.r * other[1], self.s * other[2])
         
         return NotImplemented
     
@@ -60,9 +74,9 @@ class Hex:
     def distance_to(self, other) -> int:
         return self.magnitude(self-other)
     
-    def direction(self, direction):
+    def direction(self, direction) -> (int, int, int):
         if -6 <= direction <= 5:
-            return Hex(*cube_direction_vectors[direction])
+            return cube_direction_vectors[direction]
         raise ValueError("direction must be between -5 to 5")
     
     def neighbor(self, direction):
@@ -88,7 +102,26 @@ class Hex:
         for i in range(N):
             hex = self.hex_lerp(target_hex, 1.0/N * i)
             hexes.append(hex)
+        return hexes
 
+    def rotate(self, n_rotations:int, origin, counter=False):
+        radius = self.distance_to(origin)
+        hex = Hex(*cube_direction_vectors[0]) * radius #starting hex to start the search for self
+
+        rotation_count = 0
+        found = False
+        rotation_range = range(-5,1) if counter else range(6)
+        for i in rotation_range:
+            for _ in range(radius):
+                hex=hex.neighbor(i)
+
+                if found:
+                    rotation_count += 1
+                    if rotation_count == n_rotations:
+                        return hex
+
+                if hex == self:
+                    found = True
 
 class Orientation:
     def __init__(self, f0, f1, f2, f3, b0, b1, b2, b3, start_angle) -> None:
@@ -230,7 +263,6 @@ class Layout:
         radius -= 1
         #offset is used if I want the center to be 3 hexagons instead of a central single hexagon.
         offset = 2 if tri_center else 1
-        print(offset)
         for q in range(-radius, radius + offset):
             r1 = max(-radius, -q - radius)
             r2 = min(radius, -q + radius) + offset
@@ -238,6 +270,34 @@ class Layout:
                 hex = Hex(q, r, -q-r)
                 hexes.append(hex)
         return hexes
+    
+    def oblong(self, height:int, width:int) -> List[Hex]:
+        hexes = []
+
+        x_diff = height - width
+        diff_range = range(height - abs(x_diff) + 1, height + 1)
+
+        for q in range(-height, height + 1):
+            r1 = max(-height, -q - height)
+            r2 = min(height, -q + height) + 1
+
+            if x_diff > 0:
+                for r in range(r1, r2):
+                    s = -q-r
+                    if abs(q) in diff_range or abs(s) in diff_range:
+                        continue
+                    hex = Hex(q, r, -q-r)
+                    hexes.append(hex)
+            else:
+                for r in range(r1, r2):
+                    s = -q-r
+                    if abs(r) in diff_range:
+                        continue
+                    hex = Hex(q, r, -q-r)
+                    hexes.append(hex)
+
+        return hexes
+                               
     
     def tri(self, radius:int) -> List[Hex]:
         hexes = []
@@ -277,14 +337,17 @@ class Layout:
         if radius < 1:
             raise ValueError('ring radius needs to be greater than 1')
         hexes = []
-        radius -= 1 #to make it more intuitive
+        radius -= 1 #to make it more intuitive when using the function for abilities
         hex = Hex(*cube_direction_vectors[0]) * radius
 
-        for i in range(6):
-            for j in range(radius):
+        for i in range(-4,0):
+            for _ in range(radius): 
                 hexes.append(hex)
                 hex = hex.neighbor(i)
         return hexes
+    
+    def half_ring(self):
+        pass
     
     def rectangle(self, width:int, height:int, odd=False) -> List[Hex]:
         hexes = []
@@ -319,7 +382,7 @@ class Layout:
         return hexes
 
 
-
+    #maybe add this later
     def snowflake(self):
         pass
  
