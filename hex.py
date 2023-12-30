@@ -1,6 +1,8 @@
+from __future__ import annotations
 from math import sqrt, radians, cos, sin, pi
 import pygame
 from typing import List, Tuple
+
 
 cube_direction_vectors = [
     (-1, 0, 1), (0, -1, 1), (1, -1, 0),
@@ -31,7 +33,7 @@ class Hex:
     def __ne__(self, other) -> bool:
         return not self.__eq__(other)
     
-    def __add__(self, other):
+    def __add__(self, other) -> Hex:
         if isinstance(other, Hex):
             return Hex(self.q + other.q, self.r + other.r, self.s + other.s)
 
@@ -40,7 +42,7 @@ class Hex:
 
         return NotImplemented
 
-    def __sub__(self, other):
+    def __sub__(self, other) -> Hex:
         if isinstance(other, Hex):
             return Hex(self.q - other.q, self.r - other.r, self.s - other.s)
 
@@ -49,7 +51,7 @@ class Hex:
 
         return NotImplemented
     
-    def __mul__(self, other):
+    def __mul__(self, other) -> Hex:
         if isinstance(other, Hex):
             return Hex(self.q * other.q, self.r * other.r, self.s * other.s)
 
@@ -79,14 +81,14 @@ class Hex:
             return cube_direction_vectors[direction]
         raise ValueError("direction must be between -5 to 5")
     
-    def neighbor(self, direction):
+    def neighbor(self, direction) -> Hex:
         return self + self.direction(direction)
     
-    def lerp(a: float, b:float, t:float):
+    def lerp(a: float, b:float, t:float) -> float:
         return a * (1-t) + (b * t)
         # a + (b - a) * t is more recognizable but worse on floating point arithmetic
     
-    def hex_lerp(self, target_hex, t):
+    def hex_lerp(self, target_hex, t) -> Hex:
         if isinstance(target_hex, Hex):
             return fractional_to_int_hex(
                     self.lerp(self.q, target_hex.q, t),
@@ -96,7 +98,7 @@ class Hex:
         raise ValueError("target_hex must be a Hex object.")
     
     #if this isn't working as intended, it may be due to exact values and we need a nudge
-    def hex_line_to(self, target_hex):
+    def hex_line_to(self, target_hex) -> List[Hex]:
         N = self.distance_to(target_hex)
         hexes = []
         for i in range(N):
@@ -104,7 +106,7 @@ class Hex:
             hexes.append(hex)
         return hexes
 
-    def rotate(self, n_rotations:int, origin, counter=False):
+    def rotate(self, n_rotations:int, origin, counter=False) -> Hex:
         radius = self.distance_to(origin)
         hex = Hex(*cube_direction_vectors[0]) * radius #starting hex to start the search for self
 
@@ -118,10 +120,36 @@ class Hex:
                 if found:
                     rotation_count += 1
                     if rotation_count == n_rotations:
-                        return hex
+                        self.q = hex.q
+                        self.r = hex.r
+                        self.s = hex.s
+                        return self
 
                 if hex == self:
                     found = True
+
+    def rotate_60(self, counter=False) -> Hex:
+        q = self.q
+        r = self.r
+        s = self.s
+
+        if counter:
+            self.q = -s
+            self.r = -q
+            self.s = -r
+        else:
+            self.q = -r
+            self.r = -s
+            self.s = -q
+        return self
+    
+    def rotate_60_n(self, n_rotations, counter=False) -> Hex:
+        n_rotations %= 6
+        for _ in range(n_rotations):
+            self.rotate_60(counter)
+        return self
+
+        
 
 class Orientation:
     def __init__(self, f0, f1, f2, f3, b0, b1, b2, b3, start_angle) -> None:
