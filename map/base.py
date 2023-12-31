@@ -1,31 +1,9 @@
 from hex import Hex, Orientation, Layout, orientation_pointy, orientation_flat
 from events import OnEnterEvent, OnExitEvent, OnSotEvent, OnEotEvent, MovementEventBase
-from game_objects import EnviromentObject, Objective
 from typing import List, Dict, Type, Callable
 
 EventHandler = Callable[[MovementEventBase], None]
 
-class GameEdge:
-    def __init__(self, 
-            hex1: Hex, #This is the parent Hex, the hex that will be passible down but not up
-            hex2: Hex, #Child Hex
-            is_passable: bool, 
-            is_directional: bool, 
-            is_los: bool, 
-            color: (int, int, int)
-        ):
-        self.hex1 = hex1
-        self.hex2 = hex2
-        self.is_passable = is_passable
-        self.is_directional = is_directional
-        self.is_los = is_los
-        self.color = color
-
-    def check_passability(self, to_hex):
-        if self.is_directional and to_hex == self.hex1:
-            return False
-        return self.is_passable
-    
 class GameTile(Hex):
     def __init__(self, q: int, r: int, 
             surface_color: (int, int, int), #RGB
@@ -33,7 +11,7 @@ class GameTile(Hex):
 
             character = None,
             enviroment_obj: List[EnviromentObject] = [],
-            objectives: List[Objective] = [],
+            structures: List[Objective] = [],
 
             is_passable:bool = True,
             is_los:bool = True,
@@ -52,19 +30,12 @@ class GameTile(Hex):
 
             self.character = character
             self.enviroment_obj = enviroment_obj
-            self.objective = objectives
+            self.structures = structures
 
             self.is_passable = is_passable
             self.is_los = is_los
             self.is_hidden = is_hidden
             self.event_handlers = event_handlers
-
-    def add_object(self, game_object:GameObject):
-        self.game_objects.append(game_object)
-    
-    def remove_object(self, game_object: GameObject):
-        self.game_objects.remove(game_object)
-
 
     def register_event_handler(self, event_name, handler):
         if event_name in self.event_handlers:

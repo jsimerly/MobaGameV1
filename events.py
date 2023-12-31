@@ -1,4 +1,15 @@
+class IGameTurnBehavior:
+    def perform_start_of_turn(self):
+        pass
 
+    def perform_end_of_turn(self):
+        pass
+
+    def perform_on_enter(self):
+        pass
+
+    def perform_on_exit(self):
+        pass
 
 class MovementEventBase:
     def __init__(self, entity, event):
