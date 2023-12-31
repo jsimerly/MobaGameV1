@@ -5,7 +5,7 @@ class Tree(EnviromentBase):
     def __init__(self, sprite):
         super().__init__(
             name='Tree', 
-            is_passible=False,
+            is_passable=False,
             is_los=False, 
             is_concealing=False,
             sprite=sprite,
@@ -15,7 +15,7 @@ class Rock(EnviromentBase):
     def __init__(self, sprite):
         super().__init__(
             name='Rock', 
-            is_passible=True,
+            is_passable=True,
             is_los=True, 
             is_concealing=False,
             sprite=sprite,
@@ -25,7 +25,7 @@ class Water(EnviromentBase):
     def __init__(self, sprite):
         super().__init__(
             name='Water', 
-            is_passible=False,
+            is_passable=False,
             is_los=True, 
             is_concealing=False,
             sprite=sprite,
@@ -35,7 +35,7 @@ class Brush(EnviromentBase):
     def __init__(self, sprite):
         super().__init__(
             name='Brush', 
-            is_passible=False,
+            is_passable=False,
             is_los=False, 
             is_concealing=False,
             sprite=sprite,
@@ -45,7 +45,7 @@ class RoughTerrain(EnviromentBase):
     def __init__(self, sprite, movement_cost):
         super().__init__(
             name='Rough Terrain', 
-            is_passible=True,
+            is_passable=True,
             is_los=False, 
             is_concealing=False,
             sprite=sprite,

@@ -4,7 +4,7 @@ from events import IGameTurnBehavior
 
 class MapEdge:
     def __init__(self, 
-        hex1: GameTile, #This is the parent Hex, the hex that will be passible down but not up
+        hex1: GameTile, #This is the parent Hex, the hex that will be passable down but not up
         hex2: GameTile, #Child Hex
         is_passable: bool, 
         is_directional: bool, 
@@ -27,13 +27,13 @@ class MapEdge:
 class MapObject:
     def __init__(self, 
         name:str, 
-        is_passible:bool, 
+        is_passable:bool, 
         is_los:bool, 
         is_concealing:bool,
         sprite
     ):
         self.name = name
-        self.is_passible = is_passible
+        self.is_passable = is_passable
         self.is_los = is_los
         self.is_concealing = is_concealing
         self.sprite = sprite
@@ -50,6 +50,12 @@ class MapObject:
     def perform_on_exit(self):
         pass
 
+    def draw(self):
+        pass
+
+    def clear(self):
+        pass
+
     def __str__(self) -> str:
         return self.name
     
@@ -59,22 +65,22 @@ class MapObject:
 class EnviromentBase(MapObject):
     def __init__(self,
         name: str, 
-        is_passible: bool, 
+        is_passable: bool, 
         is_los: bool, 
         is_concealing: bool,
         sprite,
     ):
-        super().__init__(name, is_passible, is_los, is_concealing, sprite)
+        super().__init__(name, is_passable, is_los, is_concealing, sprite)
 
 class StructureBase(MapObject):
     def __init__(self,
         name: str, 
-        is_passible: bool, 
+        is_passable: bool, 
         is_los: bool, 
         is_concealing: bool,
         sprite,
     ):
-        super().__init__(name, is_passible, is_los, is_concealing, sprite)
+        super().__init__(name, is_passable, is_los, is_concealing, sprite)
 
     def destroy(self):
         pass
