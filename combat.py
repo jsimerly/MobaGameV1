@@ -29,7 +29,7 @@ class AttackComponent:
             damage_done = self.get_damage_done(damage)
             target.take_damage(damage_done)
         else:
-            raise ValueError(f'{target} does not haev a health component.')
+            raise ValueError(f'{target} does not have a health component.')
 
 class HealthComponent:
     def __init__(self, health):

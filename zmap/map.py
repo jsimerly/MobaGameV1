@@ -4,7 +4,7 @@ from settings import LIGHT_GREY, SCREEN_WIDTH, SCREEN_HEIGHT
 from typing import List
 from utils import get_hex_verticies, cube_to_pixel, hex_distance
 from combat import AttackComponent
-from team import Team
+from teams import Team
 
 pg.font.init()
 font = pg.font.SysFont(None, 24)

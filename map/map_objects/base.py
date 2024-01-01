@@ -1,6 +1,7 @@
 from typing import Dict, List, Type
 from base import GameTile, GameEdge
 from events import IGameTurnBehavior
+from abc import ABC
 
 class MapEdge:
     def __init__(self, 
@@ -24,7 +25,7 @@ class MapEdge:
         return self.is_passable
     
 
-class MapObject:
+class MapObject(ABC):
     def __init__(self, 
         name:str, 
         is_passable:bool, 

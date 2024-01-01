@@ -8,9 +8,6 @@ pg.init()
 screen = pg.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT), pg.SRCALPHA)
 screen.fill(BGCOLOR)
 
-team_1 = Team(color=(148, 49, 80))
-team_2 = Team(color=(138, 166, 181))
-
 # game_map = HexMap(screen=screen, map_structures=map_1, power_sources=power_sources)
 
 orientation = orientation_pointy
