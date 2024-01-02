@@ -1,17 +1,19 @@
 from hex import Hex, Orientation, Layout, orientation_pointy, orientation_flat
 from events import OnEnterEvent, OnExitEvent, OnSotEvent, OnEotEvent, MovementEventBase
 from typing import List, Dict, Type, Callable
+from map.map_objects.base import MapEdge
 
 EventHandler = Callable[[MovementEventBase], None]
+
+class TileObserver:
+    def on_ability(self, ability):
+        pass
+
 
 class GameTile(Hex):
     def __init__(self, q: int, r: int, 
             surface_color: (int, int, int), #RGB
             visual_effects = [],
-
-            character = None,
-            enviroment_obj: List[EnviromentObject] = [],
-            structures: List[Objective] = [],
 
             is_passable:bool = True,
             is_los:bool = True,
@@ -28,14 +30,11 @@ class GameTile(Hex):
             self.surface_color = surface_color
             self.visual_effects = visual_effects
 
-            self.character = character
-            self.enviroment_obj = enviroment_obj
-            self.structures = structures
-
             self.is_passable = is_passable
             self.is_los = is_los
             self.is_hidden = is_hidden
             self.event_handlers = event_handlers
+            self.observers = []
 
     def register_event_handler(self, event_name, handler):
         if event_name in self.event_handlers:
@@ -48,7 +47,11 @@ class GameTile(Hex):
              handler(**args, **kwargs)
 
 
+    def register_observer(self, observer: TileObserver):
+        self.observers.append(observer)
 
+    def unregister_observer(self, observer: TileObserver):
+        self.observers.remove(observer)
 
 class GameMap:
     def __init__(self, 
@@ -65,7 +68,7 @@ class GameMap:
     def generate_map_grid(map_layout) -> Dict[(int, int), GameTile]:
         pass
 
-    def generate_map_edges(map_layout) -> Dict[(Hex, Hex), GameEdge]:
+    def generate_map_edges(map_layout) -> Dict[(Hex, Hex), MapEdge]:
         pass
 
 

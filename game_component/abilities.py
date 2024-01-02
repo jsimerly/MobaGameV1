@@ -1,36 +1,8 @@
 from typing import Callable
-from combat import AttackComponent, HealthComponent
-from map.base import GameTile
 from abc import ABC
+from map.base import GameTile
 
-class LevelingComponent:
-    def __init__(self):
-        self.lvl = 1
-        self.pp = 0
-
-        self.lvl_2_pp_needed = 999
-        self.lvl_3_pp_needed = 2999
-
-    def gain_xp(self, pp:int):
-        self.pp += pp
-
-    def check_for_level_up(self):
-        if self.lvl == 3:
-            return
-
-        if self.lvl == 1:
-            if self.pp > self.lvl_2_pp_needed:
-                self.level_up()
-    
-    def level_up(self, level_up_handler:Callable=None):
-        self.lvl += 1
-        if level_up_handler is not None:
-            level_up_handler()
-
-        #handle units and stuff
-                       
-
-class CharacterAbility(ABC):
+class GameAbility(ABC):
     def __init__(self, 
         shape:Callable,
         shape_params:dict,
@@ -44,6 +16,7 @@ class CharacterAbility(ABC):
 
         is_piercing:bool=True,
         is_colliding:bool=True,
+        effects_structures:bool=True,
     ):
         self.shape = shape
         self.shape_params = shape_params
@@ -57,15 +30,14 @@ class CharacterAbility(ABC):
 
         self.is_piercing = is_piercing
         self.is_colliding = is_colliding
-
-
+        self.effects_structures = effects_structures
 
     def use(self, hex:GameTile):
         pass
 
 
 #Automatically hits in a radius 
-class AutoAbility(CharacterAbility):
+class AutoAbility(GameAbility):
     def __init__(self, 
         shape: Callable, 
         shape_params: dict,
@@ -81,7 +53,7 @@ class AutoAbility(CharacterAbility):
         )
 
 #Automatically hits but no collision
-class AreaAffectAbility(CharacterAbility):
+class AreaAffectAbility(GameAbility):
     def __init__(self, 
         shape: Callable, 
         shape_params: dict,
@@ -98,7 +70,7 @@ class AreaAffectAbility(CharacterAbility):
         )
 
 #Is aimed but fixed to the character
-class DirectionalAbility(CharacterAbility):
+class DirectionalAbility(GameAbility):
     def __init__(self, 
         shape: Callable, 
         shape_params: dict,
@@ -115,7 +87,7 @@ class DirectionalAbility(CharacterAbility):
         )
 
 #Is aimed, but can target an hex as the center point
-class TargetedAbility(CharacterAbility):
+class TargetedAbility(GameAbility):
     def __init__(self, 
         shape: Callable, 
         shape_params: dict,
@@ -133,37 +105,3 @@ class TargetedAbility(CharacterAbility):
 
     def rotate(self):
         pass
-
-
-class Character:
-    def __init__(self, 
-        name:str,
-        health:int,  
-        resources:int,
-        resource_name:str,
-        basic_ability: CharacterAbility,
-        ability_1: CharacterAbility, 
-        ability_2: CharacterAbility, 
-        super_ability: CharacterAbility,
-        sprite,
-    ):
-        self.name = name
-        self.resources = resources
-        self.resource_name = resource_name
-
-        self.basic_ability = basic_ability
-        self.ability_1 = ability_1
-        self.ability_2 = ability_2
-        self.super_ability = super_ability
-        self.leveling_component = LevelingComponent()
-        self.health_component = HealthComponent(health)
-
-    def use_basic_ability(self):
-        self.basic_ability.use()
-        self.resources -= self.basic_ability.resource_cost
-
-    def draw(self):
-        pass
-
-    def __str__(self) -> str:
-        return self.name

@@ -3,7 +3,7 @@ import math
 from settings import LIGHT_GREY, SCREEN_WIDTH, SCREEN_HEIGHT
 from typing import List
 from utils import get_hex_verticies, cube_to_pixel, hex_distance
-from combat import AttackComponent
+from game_component.entity_components import AttackComponent
 from teams import Team
 
 pg.font.init()

@@ -1,6 +1,6 @@
 import pygame as pg
 import math
-from combat import AttackComponent
+from game_component.entity_components import AttackComponent
 
 class Mob:
     def __init__(self, health:int):  

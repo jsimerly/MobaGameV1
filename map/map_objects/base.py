@@ -1,7 +1,7 @@
 from typing import Dict, List, Type
 from base import GameTile, GameEdge
-from events import IGameTurnBehavior
 from abc import ABC
+from game_component.entity import Entity
 
 class MapEdge:
     def __init__(self, 
@@ -25,6 +25,7 @@ class MapEdge:
         return self.is_passable
     
 
+
 class MapObject(ABC):
     def __init__(self, 
         name:str, 
@@ -38,6 +39,7 @@ class MapObject(ABC):
         self.is_los = is_los
         self.is_concealing = is_concealing
         self.sprite = sprite
+        self.observers = []
 
     def perform_start_of_turn(self):
         pass
@@ -73,19 +75,7 @@ class EnviromentBase(MapObject):
     ):
         super().__init__(name, is_passable, is_los, is_concealing, sprite)
 
-class StructureBase(MapObject):
-    def __init__(self,
-        name: str, 
-        is_passable: bool, 
-        is_los: bool, 
-        is_concealing: bool,
-        sprite,
-    ):
-        super().__init__(name, is_passable, is_los, is_concealing, sprite)
 
-    def destroy(self):
-        pass
-        
 
 
 

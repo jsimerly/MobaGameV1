@@ -1,59 +1,14 @@
-from map.map_objects.base import MapObject
+from map.map_objects.base import StructureBase
+from game_component.entity_components import HealthComponent, AttackComponent
 from typing import Callable
-from game_component.entity_components import AbilityComponent, HealthComponent, VisionComponent
-from game_component.abilities import GameAbility
-from game_component.modifiers import SlowMod, Stun, Blind, Root, Silence
 
-
-
-class StructureBase(MapObject):
-    def __init__(self,
-        name:str,
-        health:int,
-        vision_range:int,
-        basic_ability: GameAbility,
-
-        #Map Obj 
-        is_passable: bool, 
-        is_los: bool, 
-        is_concealing: bool,
-        sprite,
-    ):
-        super().__init__(
-            name, 
-            is_passable, 
-            is_los, 
-            is_concealing, 
-            sprite
-        )
-
-        self.vision_range = VisionComponent(vision_range)
-        self.ability_component = AbilityComponent(basic_ability)
-        self.health_component = HealthComponent(health)
-        self.modifiers = []
-        self.queued_abilities = []
-
-    def add_modifier(self, modifier):
-        if any([
-            isinstance(modifier, Stun),
-            isinstance(modifier, SlowMod),
-            isinstance(modifier, Blind),
-            isinstance(modifier, Root),
-            isinstance(modifier, Silence),
-        ]):
-            return
-        
-        
-
-    def destroy(self):
-        pass
-        
 
 class MainBase(StructureBase):
     def __init__(self, 
         sprite, 
         color:(int,int,int), #Will be team color eventually
         radius:int=2,
+        health:int=1000,
         teleport_radius:int=3,
     ):
         super().__init__(
@@ -65,27 +20,16 @@ class MainBase(StructureBase):
         )
         self.color = color
         self.radius = radius
+        self.health_component = HealthComponent(health)
         self.teleport_radius = teleport_radius
 
     def teleport(self):
+        #teleport
         pass
-    
-class Teleporter(StructureBase):
-    def __init__(self, 
-        sprite, 
-        color:(int,int,int), 
-        health:int=500,
-        teleport_radius:int=2
-    ):
-        super().__init__(
-            'Teleporter', 
-            is_passable=False, 
-            is_los=False, 
-            is_concealing=False, 
-            sprite=sprite
-        )
-        self.color = color
-        self.teleport_radius = teleport_radius
+
+    def destroy(self):
+        super().destroy()
+        #End the game when this happens
 
 class Teleporter(StructureBase):
     def __init__(self, 
@@ -103,6 +47,7 @@ class Teleporter(StructureBase):
             sprite=sprite
         )
         self.color = color
+        self.health_component = HealthComponent(health)
         self.teleport_radius = teleport_radius
 
     def teleport(self):
@@ -115,7 +60,9 @@ class Teleporter(StructureBase):
 
 class Turret(StructureBase):
     def __init__(self, 
-        sprite,
+        sprite,  
+        health:int=500,
+        damage:int=200,
     ):
         super().__init__(
             'Turret', 
@@ -125,6 +72,8 @@ class Turret(StructureBase):
             sprite=sprite
         )
 
+        self.health_component = HealthComponent(health)
+        self.attack_component = AttackComponent(damage)
 
 class PowerCrystal(StructureBase):
     def __init__(self, sprite):
