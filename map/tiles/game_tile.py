@@ -1,9 +1,11 @@
 from hex import Hex, Layout
-from typing import Callable, Optional
+from typing import Callable, Optional, List
 from entity.entity import Entity
 from map.tiles.tile_effect import *
 from settings import LIGHT_GREY
 import pygame as pg
+
+pg.font.init()
 
 class GameTile(Hex):
     def __init__(self, 
@@ -27,7 +29,7 @@ class GameTile(Hex):
         self.color = surface_color
         visual_effects = []
 
-        self.occupants:Entity = []
+        self.occupants: List[Entity] = []
         self.tile_effects = {
             OnEnterTileEffect: [],
             OnExitTileEffect: [],
@@ -113,9 +115,17 @@ class GameTile(Hex):
                 self.add_effect(effect)  
 
     
-    def draw(self, screen):
+    def draw(self, screen: pg.display, coords:bool=False):
         point = self.layout.hex_to_pixel(self)
         verticies = self.layout.get_hex_verticies(point)
         pg.draw.polygon(screen, self.color, verticies)
         pg.draw.polygon(screen, LIGHT_GREY, verticies, 2)
 
+        if coords:
+            pg.font.init()
+            font = pg.font.SysFont('Arial', 12)
+            coord_text = f'{self.q}, {self.r}'
+            text_surface = font.render(coord_text, True, (255, 255, 255))
+            text_pos = (point[0] - text_surface.get_width() // 2, point[1] - text_surface.get_height() // 2)
+
+            screen.blit(text_surface, text_pos)

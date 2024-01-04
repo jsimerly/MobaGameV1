@@ -6,10 +6,11 @@ class GameMap:
         self.map = map_loadout.generate_map(screen)
         self.screen = screen
         self.layout = map_loadout.layout
+        self.draw_coords = True
 
     def draw(self):
         for coord, tile in self.map.items():
-            tile.draw(self.screen)
+            tile.draw(self.screen, self.draw_coords)
     
 
 

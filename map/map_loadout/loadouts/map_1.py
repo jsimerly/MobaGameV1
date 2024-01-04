@@ -1,6 +1,7 @@
 from map.map_loadout.map_loadout import MapLoadout
 from hex import Layout, orientation_pointy, Point
 from settings import SCREEN_HEIGHT, SCREEN_WIDTH
+from map.tiles.tiles import *
 
 orientation=orientation_pointy
 size = Point(30, 30)
@@ -16,7 +17,10 @@ shape_params = {
     'radius' : 9,
 }
 
-special_tiles = {}
+special_tiles = {
+    Tree: [(2,0), (1,1), (2,-1)],
+    Brush: [(0,2)]
+}
 
 map_1 = MapLoadout(
     layout=layout,

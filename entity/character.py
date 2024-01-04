@@ -1,11 +1,13 @@
 from abilities.ability import Ability
 from abilities.slots import *
+from components.sprite import SpriteComponent
 from entity.entity import Entity
 from components import *
 from typing import List
 
 class Character(Entity):
     def __init__(self,
+        name:str,
         #component params
         health:int,
         movement_cost:int,
@@ -18,10 +20,10 @@ class Character(Entity):
         ability_2: Ability,
         ability_super: Ability,
         #sprite
-        sprite,
+        sprite_component:SpriteComponent,
     ):
         super().__init__()
-
+        self.name=name
         #Resource
         self.set_resource_component(resource_comp)
         
@@ -80,7 +82,7 @@ class Character(Entity):
         self.set_map_interaction_component(map_interaction_comp)
 
         #Sprite
-        self.set_sprite_component()
+        self.set_sprite_component(sprite_component)
 
         self.queued_movement_to = None
         self.queued_abilities = []
@@ -105,6 +107,9 @@ class Character(Entity):
 
     def set_resource_component(self, resource_component: ResourceComponent):
         self.resource_component = resource_component
+
+    def set_sprite_component(self, sprite_component: SpriteComponent):
+        self.sprite_component = sprite_component
 
     def queue_movement(self):
         pass

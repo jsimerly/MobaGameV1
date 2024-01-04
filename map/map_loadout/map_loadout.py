@@ -26,7 +26,7 @@ class MapLoadout:
         for tile_class, coords in self.special_tiles.items():
             for cord in coords:
                 q, r = cord
-                game_map[(q,r)] = tile_class(q, r)
+                game_map[(q,r)] = tile_class(q, r, self.layout, screen)
 
         return game_map
 
