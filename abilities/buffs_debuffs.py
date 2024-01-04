@@ -1,5 +1,6 @@
 from abc import ABC
 from typing import Callable
+from entity.entity import Entity
 
 class Buff(ABC):
     def __init__(self, name: str, is_debuff: bool = False, is_stacking: bool = False, max_stacks: int = None, max_stack_effect: Callable = None, affected_abilities=None, duration: int = 1):
@@ -48,12 +49,10 @@ class DamageTakenBuff(Buff):
         super().__init__(name, is_debuff, is_stacking, max_stacks, max_stack_effect, affected_abilities, duration)
         self.modifier = modifier
 
-
 class HealingBuff(Buff):
     def __init__(self, modifier, name, is_debuff=False, is_stacking=False, max_stacks=None, max_stack_effect=None, affected_abilities=None, duration=1):
         super().__init__(name, is_debuff, is_stacking, max_stacks, max_stack_effect, affected_abilities, duration)
         self.modifier = modifier
-
 
 class ShieldBuff(Buff):
     def __init__(self, shield_size, name, is_debuff=False, is_stacking=False, max_stacks=None, max_stack_effect=None, affected_abilities=None, duration=1):
@@ -65,9 +64,13 @@ class HealingOverTime(Buff):
         super().__init__(name, is_stacking, max_stacks, max_stack_effect, affected_abilities, duration,  is_debuff=False)
 
 class DamageOverTime(Buff):
-    def __init__(self, name: str, is_stacking: bool = False, max_stacks: int = None, max_stack_effect = None, affected_abilities=None, duration: int = 1):
+    def __init__(self, name: str, damage:int, is_stacking: bool = False, max_stacks: int = None, max_stack_effect = None, affected_abilities=None, duration: int = 1):
         super().__init__(name, is_stacking, max_stacks, max_stack_effect, affected_abilities, duration, is_debuff=True)
 
+        self.damage = damage
+
+    def apply_damage(self, entity: Entity):
+        entity.health_component.take_damage(self.damage)
 
 if __name__ == '__main__':
     empowered_flame = DamageBuff(

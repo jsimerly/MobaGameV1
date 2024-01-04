@@ -1,6 +1,5 @@
 import pygame as pg
 import math
-from zmap.map import *
 from settings import *
 from hex import *
 pg.init()

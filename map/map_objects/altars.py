@@ -1,5 +1,5 @@
 from map.map_objects.base import StructureBase
-from game_component.entity_components import HealthComponent, AttackComponent
+from components import HealthComponent
 from typing import Callable
 
 class AltarBase(StructureBase):

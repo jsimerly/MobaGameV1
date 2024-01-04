@@ -1,15 +1,16 @@
 from map.map_objects.base import MapObject
 from typing import Callable
-from game_component.entity_components import AbilityComponent, HealthComponent, VisionComponent
-from game_component.abilities import GameAbility
-from game_component.modifiers import SlowMod, Stun, Blind, Root, Silence
+from abilities.status_effects import Slow, Stun, Blind, Root
+from components import AbilityComponent, HealthComponent, VisionComponent
+from abilities.ability import Ability
+
 
 class StructureBase(MapObject):
     def __init__(self,
         name:str,
         health:int,
         vision_range:int,
-        basic_ability: GameAbility,
+        basic_ability: Ability,
 
         #Map Obj 
         is_passable: bool, 
@@ -34,10 +35,9 @@ class StructureBase(MapObject):
     def add_modifier(self, modifier):
         if any([
             isinstance(modifier, Stun),
-            isinstance(modifier, SlowMod),
+            isinstance(modifier, Slow),
             isinstance(modifier, Blind),
             isinstance(modifier, Root),
-            isinstance(modifier, Silence),
         ]):
             return
         
