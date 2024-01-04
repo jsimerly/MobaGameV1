@@ -26,7 +26,7 @@ while is_running:
             is_running = False
 
     game_map.draw()
-    crud.sprite_component.draw()
+    crud.sprite_component.draw((1200,1200), screen)
 
     pg.display.flip()
 

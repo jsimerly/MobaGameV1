@@ -77,7 +77,7 @@ class Character(Entity):
 
         #Map Interaction
         map_interaction_comp = MapInteractionComponent(
-            is_passable=True, can_end_on=False, blocks_vision=False, hides_occupants=False, is_hidden=False, walkthrough_effect=False
+            is_passable=True, can_end_on=False, blocks_vision=False, hides_occupants=False, is_hidden=False, walkthrough_effects=False, is_slowing=False
         )
         self.set_map_interaction_component(map_interaction_comp)
 

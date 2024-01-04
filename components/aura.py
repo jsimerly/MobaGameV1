@@ -2,7 +2,7 @@ from .component import Component
 from typing import List
 
 class AuraComponent(Component):
-    def __init__(self, aura_range: int, effects): #this will gventually take AuraEffect which will be an ability type for characters. (each aura could have its own affect.)
+    def __init__(self, aura_range: int = 2, effects=[]): #this will gventually take AuraEffect which will be an ability type for characters. (each aura could have its own affect.)
         self.effects = effects  # List of effects the aura applies
         self.affected_entities = set()  # Entities currently affected by the aura
 

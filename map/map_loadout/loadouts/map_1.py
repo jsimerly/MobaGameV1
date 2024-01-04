@@ -4,7 +4,7 @@ from settings import SCREEN_HEIGHT, SCREEN_WIDTH
 from map.tiles.tiles import *
 
 orientation=orientation_pointy
-size = Point(30, 30)
+size = Point(36, 36)
 origin = Point(SCREEN_WIDTH//2, SCREEN_HEIGHT//2)
 
 layout = Layout(

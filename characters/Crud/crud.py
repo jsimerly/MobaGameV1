@@ -6,7 +6,8 @@ from .abilities import *
 
 
 rage_resource = RageResourceComponent(name='Rage', max_resource=10)
-sprite_comp = SpriteComponent('./graphics/crud.png')
+sprite_comp = SpriteComponent('characters\crud\graphics\crud.png')
+
 
 class Crud(Character):
     def __init__(self, 
@@ -26,7 +27,7 @@ class Crud(Character):
 
         sprite_component: SpriteComponent=sprite_comp,
     ):
-        super().__init__(health, movement_cost, level_increments, vision_range, resource_comp, basic_ability, ability_1, ability_2, ability_super, sprite_component)
+        super().__init__(name, health, movement_cost, level_increments, vision_range, resource_comp, basic_ability, ability_1, ability_2, ability_super, sprite_component)
 
         self.took_damage_last_turn:bool = False  
 

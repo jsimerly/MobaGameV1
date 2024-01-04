@@ -5,6 +5,7 @@ class MapInteractionComponent:
         is_passable:bool, 
         can_end_on:bool, 
         blocks_vision:bool, 
+        is_hidden:bool,
         hides_occupants: bool,
         is_slowing:bool,
         walkthrough_effects: Optional[List[Callable]] = None,
@@ -12,6 +13,7 @@ class MapInteractionComponent:
         self.is_passable = is_passable
         self.can_end_on = can_end_on
         self.blocks_vision = blocks_vision
+        self.is_hidden = is_hidden
         self.hides_occupants = hides_occupants
         self.is_slowing = is_slowing
         self.walkthrough_effects = walkthrough_effects or []
