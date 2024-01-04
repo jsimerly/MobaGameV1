@@ -1,14 +1,15 @@
 from typing import Optional
-from tiles.game_tile import GameTile
-from tile_effect import OnEnterTileEffect, OnEndOfTurnTileEffect
+from map.tiles.game_tile import GameTile
+from map.tiles.tile_effect import OnEnterTileEffect, OnEndOfTurnTileEffect
 from abilities.buffs_debuffs import DamageOverTime
 from entity.entity import Entity
 
 
 class Grass(GameTile):
-    def __init__(self, q: int, r: int):
+    def __init__(self, q: int, r: int, layout, screen):
         super().__init__(
-            q, r, 
+            q=q, r=r, layout=layout, screen=screen,
+            
             surface_color=(140, 181, 101), 
             is_passable=True, 
             can_pierce=True,
@@ -19,9 +20,9 @@ class Grass(GameTile):
         )
 
 class Tree(GameTile):
-    def __init__(self, q: int, r: int):
+    def __init__(self, q: int, r: int, layout, screen):
         super().__init__(
-            q, r, 
+            q, r, layout, screen,
             surface_color=(12, 36, 2), 
             is_passable=False, 
             can_pierce=False,
@@ -33,9 +34,9 @@ class Tree(GameTile):
 
 #Different from trees only because some characters interact directly with trees.
 class Rock(GameTile):
-    def __init__(self, q: int, r: int):
+    def __init__(self, q: int, r: int, layout, screen):
         super().__init__(
-            q, r, 
+            q, r, layout, screen,
             surface_color=(58,50,50), 
             is_passable=False, 
             can_pierce=False,
@@ -46,9 +47,9 @@ class Rock(GameTile):
         )
 
 class Water(GameTile):
-    def __init__(self, q: int, r: int):
+    def __init__(self, q: int, r: int, layout, screen):
         super().__init__(
-            q, r, 
+            q, r, layout, screen, 
             surface_color=(152, 216, 227), 
             is_passable=False, 
             can_pierce=True,
@@ -59,9 +60,9 @@ class Water(GameTile):
         )
 
 class Brush(GameTile):
-    def __init__(self, q: int, r: int):
+    def __init__(self, q: int, r: int, layout, screen):
         super().__init__(
-            q, r, 
+            q, r, layout, screen,
             surface_color=(191, 174, 46), 
             is_passable=True, 
             can_pierce=True,
@@ -72,9 +73,9 @@ class Brush(GameTile):
         )
 
 class RoughTerrian(GameTile):
-    def __init__(self, q: int, r: int):
+    def __init__(self, q: int, r: int, layout, screen):
         super().__init__(
-            q, r, 
+            q, r, layout, screen,
             surface_color=(94, 122, 66), 
             is_passable=True, 
             can_pierce=True,
@@ -83,7 +84,6 @@ class RoughTerrian(GameTile):
             hides_occupants=False, 
             is_slowing=True, 
         )
-
 
 class LavaDamageDebuff(DamageOverTime):
     def __init__(self):
@@ -95,9 +95,9 @@ class LavaEffect_OnEnter(OnEnterTileEffect):
         return super().trigger_effect(entity)
     
 class Lava(GameTile):
-    def __init__(self, q: int, r: int):
+    def __init__(self, q: int, r: int, layout, screen):
         super().__init__(
-            q, r, 
+            q, r, layout, screen,
             surface_color=(), 
             is_passable=True, 
             can_pierce=True,

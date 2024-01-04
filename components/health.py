@@ -1,7 +1,7 @@
 from typing import List
-from buffs import BuffComponent
+from .buffs import BuffComponent
 from abilities.buffs_debuffs import HealingBuff, DamageTakenBuff, ShieldBuff
-from component import Component
+from .component import Component
 
 class HealthComponent(Component):
     def __init__(self, health:int):

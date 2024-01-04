@@ -1,6 +1,6 @@
+from __future__ import annotations
 from abc import ABC
 from typing import Callable
-from entity.entity import Entity
 
 class Buff(ABC):
     def __init__(self, name: str, is_debuff: bool = False, is_stacking: bool = False, max_stacks: int = None, max_stack_effect: Callable = None, affected_abilities=None, duration: int = 1):

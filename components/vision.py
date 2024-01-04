@@ -1,8 +1,7 @@
-from map.base import GameMap, GameTile
-from status_effects import StatusEffectComponent
+from .status_effects import StatusEffectComponent
 from abilities.status_effects import Blind, Blur
 from typing import List
-from component import Component
+from .component import Component
 
 class VisionComponent(Component):
     def __init__(self, vision_range:int):
@@ -24,7 +23,7 @@ class VisionComponent(Component):
 
 
     #Need to think about implementing what they previously saw and building before you lost vision
-    def is_in_los(self, entity, game_map:GameMap) -> List[GameTile]:
+    def is_in_los(self, entity, game_map):
         if self.check_cannot_see():
             return []
         #implement algo using the line function https://www.redblobgames.com/grids/hexagons/

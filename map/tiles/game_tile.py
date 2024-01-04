@@ -1,12 +1,16 @@
-from hex import Hex
-from components import MapInteractionComponent
+from hex import Hex, Layout
 from typing import Callable, Optional
 from entity.entity import Entity
 from map.tiles.tile_effect import *
+from settings import LIGHT_GREY
+import pygame as pg
 
 class GameTile(Hex):
     def __init__(self, 
         q:int, r:int,
+        layout: Layout,
+        screen,
+
         surface_color: (int, int, int),
         is_passable:bool, 
         can_end_on:bool, 
@@ -14,8 +18,12 @@ class GameTile(Hex):
         blocks_vision:bool, 
         hides_occupants: bool,
         is_slowing:bool,
-        walkthrough_effects: Optional[None],
+        walkthrough_effects: Optional[None] = [],
+
     ):
+        super().__init__(q, r)
+        self.layout = layout
+
         self.color = surface_color
         visual_effects = []
 
@@ -36,7 +44,7 @@ class GameTile(Hex):
         self.default_walkthrough_effects = walkthrough_effects
         
         self.is_passable = is_passable
-        self.can_pierce = self.can_pierce
+        self.can_pierce = can_pierce
         self.can_end_on = can_end_on
         self.blocks_vision = blocks_vision
         self.hides_occupants = hides_occupants
@@ -103,4 +111,11 @@ class GameTile(Hex):
         for effect_type, effects in temp_effects.items():
             for effect in effects:
                 self.add_effect(effect)  
+
+    
+    def draw(self, screen):
+        point = self.layout.hex_to_pixel(self)
+        verticies = self.layout.get_hex_verticies(point)
+        pg.draw.polygon(screen, self.color, verticies)
+        pg.draw.polygon(screen, LIGHT_GREY, verticies, 2)
 

@@ -1,6 +1,6 @@
 from typing import Dict, Type
 from abilities.status_effects import StatusEffect, Slow
-from component import Component
+from .component import Component
 
 class StatusEffectComponent(Component):
     def __init__(self):

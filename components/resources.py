@@ -1,5 +1,5 @@
 from utils import PlayerError
-from component import Component
+from components.component import Component
 
 class ResourceComponent(Component):
     def __init__(self, name:str, max_resource:int):

@@ -1,5 +1,5 @@
 from typing import List
-from component import Component
+from .component import Component
 
 class LevelingComponent(Component):
     def __init__(self, pp_increments:List[int]=None):

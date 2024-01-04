@@ -1,6 +1,6 @@
 from abilities.buffs_debuffs import Buff, DamageBuff, DamageTakenBuff, HealingBuff, ShieldBuff
 from typing import List
-from component import Component
+from .component import Component
 
 class BuffComponent(Component):
     def __init__(self):

@@ -1,12 +1,19 @@
 from map.tiles.game_tile import GameTile
-from map_loadout.map_loadout import MapLoadout
+from .map_loadout.map_loadout import MapLoadout
 
 class GameMap:
-    def __init__(self, map_loadout:MapLoadout):
-        self.grid = self.generate_map_grid(map_loadout)
+    def __init__(self, map_loadout:MapLoadout, screen):
+        self.map = map_loadout.generate_map(screen)
+        self.screen = screen
+        self.layout = map_loadout.layout
 
-    def generate_map_grid(self, map_loadout:MapLoadout):
-        pass
+    def draw(self):
+        for coord, tile in self.map.items():
+            tile.draw(self.screen)
+    
+
+
+
         
 
 

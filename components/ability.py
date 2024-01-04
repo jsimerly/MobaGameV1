@@ -1,18 +1,18 @@
-from status_effects import StatusEffectComponent
-from buffs import BuffComponent
-from health import HealthComponent
-from movement import MovementComponent
-from aura import AuraComponent
-from leveling import LevelingComponent
+from __future__ import annotations
+from .status_effects import StatusEffectComponent
+from .buffs import BuffComponent
+from .health import HealthComponent
+from .movement import MovementComponent
+from .aura import AuraComponent
+from .leveling import LevelingComponent
 from components.resources import ResourceComponent
 from abilities.buffs_debuffs import DamageBuff, DamageTakenBuff, HealingBuff
 from abilities.status_effects import Stun, Statis, Disabled
 from abilities.ability import Ability
 from abilities.slots import AbilitySlot
-from map.base import GameTile
 from utils import PlayerError
 from typing import Dict
-from component import Component
+from .component import Component
 
 class AbilityComponent(Component):
     def __init__(self):
@@ -74,7 +74,7 @@ class AbilityComponent(Component):
             self.status_effects_component.is_affected_by(Statis),
         )]
 
-    def use_ability(self, ability_slot, game_tile:GameTile):
+    def use_ability(self, ability_slot, game_tile:'GameTile'):
         if self.check_cannot_use_ability():
             raise PlayerError("You cannot use any abilities because you're either stunned, disabled, or in stasis.")
         

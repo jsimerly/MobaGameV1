@@ -1,6 +1,5 @@
 from __future__ import annotations
-from map.tiles.game_tile import GameTile
-from entity.entity import Entity
+
 
 class TileEffect:
     def __init__(self, name:str, duration:int, override_priority:int):
@@ -8,13 +7,13 @@ class TileEffect:
         self.duration = duration
         self.override_priority = override_priority
 
-    def apply_effect(self, game_tile: GameTile):
+    def apply_effect(self, game_tile):
         pass
 
-    def undo_effect(self, game_tile: GameTile):
+    def undo_effect(self, game_tile):
         pass
 
-    def trigger_effect(self, entity:Entity):
+    def trigger_effect(self, entity):
         pass
 
     #if they're the same number the effect added later will win out. this will happen by being looped over the tile effects later.

@@ -1,8 +1,8 @@
-from map.base import GameMap, GameTile
-from status_effects import StatusEffectComponent
+from __future__ import annotations
+from .status_effects import StatusEffectComponent
 from abilities.status_effects import Slow, Root, Stun, Statis
 from utils import PlayerError
-from component import Component
+from .component import Component
 
 class MovementComponent(Component):
     def __init__(self, movement_cost:int):
@@ -19,7 +19,7 @@ class MovementComponent(Component):
             self.status_effects_component.is_affected_by(Statis),
         )]
 
-    def move(self, entity, target_tile:GameTile, game_map:GameMap):
+    def move(self, entity, target_tile:'GameTile', game_map:'GameMap'):
         if self.check_cannot_move():
             raise PlayerError("You cannot move because you're either rooted, stunned, or in stasis.")
         

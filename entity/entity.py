@@ -1,4 +1,8 @@
-from components import HealthComponent, BuffComponent, VisionComponent, SpriteComponent, MapInteractionComponent
+from components.health import HealthComponent
+from components.buffs import BuffComponent
+from components.vision import VisionComponent
+from components.sprite import  SpriteComponent
+from components.map_interaction import MapInteractionComponent
 
 class Entity:
     def __init__(self) -> None:
