@@ -26,11 +26,12 @@ while is_running:
     for event in pg.event.get():
         if event.type == pg.QUIT:
             is_running = False
-
-    mouse_pos = pg.mouse.get_pos()
-    mouse_pressed = pg.mouse.get_pressed()[0]
-    hovered_hex = game_manager.get_hex_under_mouse(mouse_pos)
-    print(hovered_hex)
+        
+        elif event.type == pg.MOUSEBUTTONUP:
+            mouse_pos = pg.mouse.get_pos()
+            hovered_tile = game_manager.get_tile_under_mouse(mouse_pos)
+            game_manager.select_tile(hovered_tile)
+    
 
     pg.display.flip()
 

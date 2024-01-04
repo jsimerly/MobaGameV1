@@ -6,10 +6,11 @@ from entity.entity import Entity
 
 
 class Grass(GameTile):
-    def __init__(self, q: int, r: int, layout, screen):
+    def __init__(self, q: int, r: int, layout, screen, has_coords):
         super().__init__(
             q=q, r=r, layout=layout, screen=screen,
-            
+            has_coords=has_coords,
+
             surface_color=(140, 181, 101), 
             is_passable=True, 
             can_pierce=True,
@@ -20,9 +21,11 @@ class Grass(GameTile):
         )
 
 class Tree(GameTile):
-    def __init__(self, q: int, r: int, layout, screen):
+    def __init__(self, q: int, r: int, layout, screen, has_coords):
         super().__init__(
             q, r, layout, screen,
+            has_coords=has_coords,
+
             surface_color=(12, 36, 2), 
             is_passable=False, 
             can_pierce=False,
@@ -34,9 +37,11 @@ class Tree(GameTile):
 
 #Different from trees only because some characters interact directly with trees.
 class Rock(GameTile):
-    def __init__(self, q: int, r: int, layout, screen):
+    def __init__(self, q: int, r: int, layout, screen, has_coords):
         super().__init__(
             q, r, layout, screen,
+            has_coords=has_coords,
+
             surface_color=(58,50,50), 
             is_passable=False, 
             can_pierce=False,
@@ -47,9 +52,11 @@ class Rock(GameTile):
         )
 
 class Water(GameTile):
-    def __init__(self, q: int, r: int, layout, screen):
+    def __init__(self, q: int, r: int, layout, screen, has_coords):
         super().__init__(
-            q, r, layout, screen, 
+            q, r, layout, screen,
+            has_coords=has_coords, 
+
             surface_color=(152, 216, 227), 
             is_passable=False, 
             can_pierce=True,
@@ -60,9 +67,11 @@ class Water(GameTile):
         )
 
 class Brush(GameTile):
-    def __init__(self, q: int, r: int, layout, screen):
+    def __init__(self, q: int, r: int, layout, screen, has_coords):
         super().__init__(
             q, r, layout, screen,
+            has_coords=has_coords,
+
             surface_color=(191, 174, 46), 
             is_passable=True, 
             can_pierce=True,
@@ -73,9 +82,11 @@ class Brush(GameTile):
         )
 
 class RoughTerrian(GameTile):
-    def __init__(self, q: int, r: int, layout, screen):
+    def __init__(self, q: int, r: int, layout, screen, has_coords):
         super().__init__(
             q, r, layout, screen,
+            has_coords=has_coords,
+
             surface_color=(94, 122, 66), 
             is_passable=True, 
             can_pierce=True,
@@ -95,9 +106,11 @@ class LavaEffect_OnEnter(OnEnterTileEffect):
         return super().trigger_effect(entity)
     
 class Lava(GameTile):
-    def __init__(self, q: int, r: int, layout, screen):
+    def __init__(self, q: int, r: int, layout, screen, has_coords):
         super().__init__(
             q, r, layout, screen,
+            has_coords=has_coords,
+
             surface_color=(), 
             is_passable=True, 
             can_pierce=True,

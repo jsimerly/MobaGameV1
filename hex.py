@@ -84,6 +84,12 @@ class Hex:
     def neighbor(self, direction) -> Hex:
         return self + self.direction(direction)
     
+    def get_all_neighors(self) -> List[Hex]:
+        neighbors = []
+        for i in range(6):
+            neighbors.append(self.neighbor(i))
+        return neighbors
+    
     def lerp(a: float, b:float, t:float) -> float:
         return a * (1-t) + (b * t)
         # a + (b - a) * t is more recognizable but worse on floating point arithmetic
@@ -200,6 +206,8 @@ def fractional_to_int(q1: float, r1: float, s1: float) -> (int, int, int):
 
     return (q, r, s)
 
+def fractional_to_int_hex(q1: float, r1: float, s1: float) -> (int, int, int):
+    return Hex(fractional_to_int(q1, r1, r1))
 
 class Layout:
     def __init__(self, orientation: Orientation, size, origin, skew: int=0) -> None:

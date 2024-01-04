@@ -16,7 +16,7 @@ class GameManager:
         self.team_2 = Team(team_id=2)
         self.game_map: GameMap = None
 
-        selected: Entity = None
+        self.selected_tile: GameTile = None
 
     def add_player(self, player) -> int:
         if not self.player_1:
@@ -37,13 +37,33 @@ class GameManager:
     def set_game_map(self, game_map:GameMap):
         self.game_map = game_map
 
-    def get_hex_under_mouse(self, mouse_pos) -> GameTile:
+    def get_tile_under_mouse(self, mouse_pos) -> GameTile:
         hex_coord = self.game_map.layout.pixel_to_hex_coord(mouse_pos)
         q, r, s = hex_coord
         try:
             return self.game_map.tiles[(q,r)]
         except KeyError:
             return None
+        
+    def select_tile(self, selected_tile: GameTile):
+        if selected_tile:
+            if self.selected_tile:
+                #have to redraw neighbors to remove the outline's effect
+                self.deselect_tile(self.selected_tile)
+            
+            self.selected_tile = selected_tile
+            selected_tile.set_selected()
+
+    def deselect_tile(self, deselected_tile: GameTile):
+        hex_neighbors =  self.selected_tile.get_all_neighors()
+        self.selected_tile.deselect()
+
+        for hex in hex_neighbors:
+            axial_coord = (hex.q, hex.r)
+            tile = self.game_map.tiles[axial_coord]
+            tile.draw()
+
+
 
    
 

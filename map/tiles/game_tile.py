@@ -22,9 +22,14 @@ class GameTile(Hex):
         is_slowing:bool,
         walkthrough_effects: Optional[None] = [],
 
+        has_coords:bool = False,
     ):
         super().__init__(q, r)
         self.layout = layout
+        self.screen = screen
+        self.is_selected = False
+
+        self.has_coords = has_coords
 
         self.color = surface_color
         visual_effects = []
@@ -112,20 +117,31 @@ class GameTile(Hex):
 
         for effect_type, effects in temp_effects.items():
             for effect in effects:
-                self.add_effect(effect)  
+                self.add_effect(effect) 
 
+    def set_selected(self):
+        self.is_selected = True
+        self.draw() 
+
+    def deselect(self):
+        self.is_selected = False
+        self.draw()
     
-    def draw(self, screen: pg.display, coords:bool=False):
+    def draw(self):
         point = self.layout.hex_to_pixel(self)
         verticies = self.layout.get_hex_verticies(point)
-        pg.draw.polygon(screen, self.color, verticies)
-        pg.draw.polygon(screen, LIGHT_GREY, verticies, 2)
+        pg.draw.polygon(self.screen, self.color, verticies)
 
-        if coords:
+        outline_size = 4 if self.is_selected else 1
+        outline_color = (220,220,220) if self.is_selected else LIGHT_GREY
+        pg.draw.polygon(self.screen, outline_color, verticies, outline_size)
+
+        if self.has_coords:
             pg.font.init()
             font = pg.font.SysFont('Arial', 12)
             coord_text = f'{self.q}, {self.r}'
             text_surface = font.render(coord_text, True, (255, 255, 255))
             text_pos = (point[0] - text_surface.get_width() // 2, point[1] - text_surface.get_height() // 2)
 
-            screen.blit(text_surface, text_pos)
+            self.screen.blit(text_surface, text_pos)
+
