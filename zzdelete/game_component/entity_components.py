@@ -4,43 +4,47 @@ from hex import Layout, orientation_pointy, Point
 from typing import Callable, List
 from map.base import GameTile
 from utils import PlayerError
-from characters.base import Character, GameAbility
+from game_component.abilities import GameAbility
 from abc import ABC, abstractmethod
 
 hex_size = (30, 30)
 origin = Point(800//2, 800//2)
 layout = Layout(orientation=orientation_pointy, size=hex_size, origin=origin)
 
-
-class AbilityComponent:
+class AttackingComponent:
     def __init__(
         self,
-        damage:int,
+        ability: GameAbility
     ):
-        self.damage = damage
+        self.ability= ability
+        self.damage_modifiers = []  
     
-    def get_damage_done(self, damage:int=None):
-        if damage is None:
-            damage = self.damage
-        
-
+    def calculate_damage_done(self):
         # May skew this based on player psych findings
         mu = (damage[1] + damage[0])//4
         sigma = (damage[1] - damage[0])//4
         damage = int(random.gauss(mu, sigma)//1)
         return damage
+    
+    def use(self, target_hex:GameTile):
+        self.ability.use(target_hex)
 
-    def attack(self, damage:int, target):
-        if target.health_component:
-            damage_done = self.get_damage_done(damage)
-            target.take_damage(damage_done)
-        else:
-            raise ValueError(f'{target} does not have a health component.')
+class HealingComponent:
+    def __init__(
+        self,
+        ability: GameAbility
+    ):
+        self.ability= ability
+        self.healing_modifiers = []
 
 class HealthComponent:
     def __init__(self, health):
         self.health = health
         self.alive = True
+
+        self.damage_reduction_modifiers = []
+        self.healing_taken_modifiers = []
+        self.sheild_modifiers = []
 
     def take_damage(self, damage):
         if self.alive:
@@ -54,12 +58,12 @@ class HealthComponent:
 
         self.alive = False
 
-
 class MovementComponent:
     def __init__(self, movement_cost: int):
         self.movement_cost = movement_cost
         self.is_slowed = False
         self.is_rooted = False
+        self.movement_modifiers = []
 
     #path finding algo that returns an ordered list of game tiles for movement
     #this will need to include slows and rough terrain
@@ -86,6 +90,7 @@ class LevelingComponent:
 
         self.lvl_2_pp_needed = 999
         self.lvl_3_pp_needed = 2999
+        self.leveling_modifiers = []
 
     def gain_xp(self, pp:int):
         self.pp += pp

@@ -1,8 +1,9 @@
 from typing import Callable, List
-from game_component.entity_components import AbilityComponent, HealthComponent, MovementComponent, LevelingComponent, GameAbility, Entity
+from game_component.entity_components import AbilityComponent, HealthComponent, MovementComponent, LevelingComponent, GameAbility
 from map.base import GameTile
 from abc import ABC
 from utils import PlayerError
+from game_component.entity import Entity
 
 
 class Character(Entity):

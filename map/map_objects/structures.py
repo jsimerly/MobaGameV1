@@ -4,8 +4,6 @@ from game_component.entity_components import AbilityComponent, HealthComponent, 
 from game_component.abilities import GameAbility
 from game_component.modifiers import SlowMod, Stun, Blind, Root, Silence
 
-
-
 class StructureBase(MapObject):
     def __init__(self,
         name:str,
@@ -43,8 +41,6 @@ class StructureBase(MapObject):
         ]):
             return
         
-        
-
     def destroy(self):
         pass
         

@@ -1,14 +1,16 @@
 from hex import Hex, Orientation, Layout, orientation_pointy, orientation_flat
-from events import OnEnterEvent, OnExitEvent, OnSotEvent, OnEotEvent, MovementEventBase
-from typing import List, Dict, Type, Callable
+from typing import List, Dict,
 from map.map_objects.base import MapEdge
+from 
 
-EventHandler = Callable[[MovementEventBase], None]
 
 class TileObserver:
-    def on_ability(self, ability):
-        pass
-
+    def __init__(self):
+        self.health_component = None
+        self.modifiers = []
+        
+    def apply_effect(self, effect: TileEffect):
+        effect.apply()
 
 class GameTile(Hex):
     def __init__(self, q: int, r: int, 
@@ -18,13 +20,6 @@ class GameTile(Hex):
             is_passable:bool = True,
             is_los:bool = True,
             is_hidden:bool= False,
-
-            event_handlers: Dict[Type[MovementEventBase], List[EventHandler]] = {
-                OnEnterEvent: [],
-                OnExitEvent : [],
-                OnSotEvent: [],
-                OnEotEvent : []
-            }
         ):
             super().__init__(q, r)
             self.surface_color = surface_color
@@ -33,25 +28,33 @@ class GameTile(Hex):
             self.is_passable = is_passable
             self.is_los = is_los
             self.is_hidden = is_hidden
-            self.event_handlers = event_handlers
+
+            self.pre_combat_effects = []
+            self.combat_effects = []
             self.observers = []
 
-    def register_event_handler(self, event_name, handler):
-        if event_name in self.event_handlers:
-            self.event_handlers[event_name].append(handler)
-        else:
-            raise ValueError(f"No event named {event_name}")
-        
-    def trigger_event(self, event_name, *args, **kwargs):
-        for handler in self.event_handlers.get(event_name, []):
-             handler(**args, **kwargs)
+    def register_pre_combat_effect(self, effect: TileEffect):
+        self.pre_combat_effects.append(effect)
+    
+    def unregister_pre_combat_effect(self, effect: TileEffect):
+        self.pre_combat_effects.remove(effect)
 
+    def register_combat_effect(self, effect: TileEffect):
+        self.combat_effects.append(effect)
+
+    def register_combat_effect(self, effect: TileEffect):
+        self.combat_effects.remove(effect)
 
     def register_observer(self, observer: TileObserver):
         self.observers.append(observer)
 
     def unregister_observer(self, observer: TileObserver):
         self.observers.remove(observer)
+
+    def handle_end_of_turn(self):
+        for observer in self.observers:
+            for effect in self.effects:
+                observer.apply_effect(effect)
 
 class GameMap:
     def __init__(self, 

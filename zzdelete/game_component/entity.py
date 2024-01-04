@@ -1,8 +1,7 @@
-from abc import ABC
 from entity_components import AbilityComponent, LevelingComponent, HealthComponent, MovementComponent, GameAbility, VisionComponent
-from map.base import GameTile
+from map.base import GameTile, TileObserver
 
-class Entity(ABC):
+class Entity(TileObserver):
     def __init__(self,
         name:str,
         health:int,

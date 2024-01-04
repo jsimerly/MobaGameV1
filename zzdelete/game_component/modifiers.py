@@ -1,12 +1,16 @@
 from abc import ABC, abstractmethod
 from entity import Entity
+from game_component.abilities import GameAbility
 
 class EntityModifer(ABC):
-    def __init__(self, duration:int=None):
+    def __init__(self, duration:int=None, specific_ability:GameAbility=None):
         self.duration = duration
+        self.specific_ability = specific_ability
 
     @abstractmethod
     def apply(self, entity:Entity, duration:int=1):
+        if self.specific_ability:
+            return
         pass
 
     def reduce_duration(self):
@@ -33,6 +37,10 @@ class HealingTakenMod(EntityModifer):
     def __init__(self, duration: int, strength:float):
         super().__init__(duration)
         self.strength = strength
+
+class Shield(EntityModifer):
+    def __init__(self, duration: int = None, specific_ability: GameAbility = None):
+        super().__init__(duration, specific_ability)
 
 
 # CC
