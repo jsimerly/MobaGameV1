@@ -1,5 +1,11 @@
+from __future__ import annotations
 from team.team import Team
 from map.game_map import GameMap
+from entity.entity import Entity
+from typing import TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from map.tiles.game_tile import GameTile
 
 class GameManager:
     def __init__(self):
@@ -9,6 +15,8 @@ class GameManager:
         self.team_1 = Team(team_id=1)
         self.team_2 = Team(team_id=2)
         self.game_map: GameMap = None
+
+        selected: Entity = None
 
     def add_player(self, player) -> int:
         if not self.player_1:
@@ -28,7 +36,16 @@ class GameManager:
 
     def set_game_map(self, game_map:GameMap):
         self.game_map = game_map
-        
+
+    def get_hex_under_mouse(self, mouse_pos) -> GameTile:
+        hex_coord = self.game_map.layout.pixel_to_hex_coord(mouse_pos)
+        q, r, s = hex_coord
+        try:
+            return self.game_map.tiles[(q,r)]
+        except KeyError:
+            return None
+
+   
 
 
 

@@ -182,7 +182,7 @@ orientation_flat = Orientation(
 #Could use (x, y) to reduce memory over head if needed. The added methods may not be that useful.
 Point = pygame.math.Vector2
 
-def fractional_to_int_hex(q1: float, r1: float, s1: float) -> Hex:
+def fractional_to_int(q1: float, r1: float, s1: float) -> (int, int, int):
     q = int(round(q1))
     r = int(round(r1))
     s = int(round(s1))
@@ -198,51 +198,56 @@ def fractional_to_int_hex(q1: float, r1: float, s1: float) -> Hex:
     else:
         s = -q -r
 
-    return Hex(q, r, s)
+    return (q, r, s)
 
 
 class Layout:
-    def __init__(self, orientation: Orientation, size: Point, origin: Point, skew: int=0) -> None:
+    def __init__(self, orientation: Orientation, size, origin, skew: int=0) -> None:
         self.orientation = orientation
-        self.size = Point(size)
-        self.origin = Point(origin)
+        self.size = size
+        self.origin = origin
         self.skew = skew
 
     #returns the center of the hex
-    def hex_to_pixel(self, hex: Hex) -> Point: 
+    def hex_to_pixel(self, hex: Hex) -> (int, int): 
         M = self.orientation # M is the matrix for the orientation
-        x = (M.f0 * hex.q + M.f1 * hex.r) * self.size.x
-        y = (M.f2 * hex.q + M.f3 * hex.r) * self.size.y
-        return Point(x + self.origin.x, y + self.origin.y)
+        x = (M.f0 * hex.q + M.f1 * hex.r) * self.size[0]
+        y = (M.f2 * hex.q + M.f3 * hex.r) * self.size[1]
+        return (x + self.origin[0], y + self.origin[1])
     
     #returns a floating hex location that needs to be converted to target an real hex
-    def pixel_to_hex(self, p: Point) -> Hex:
+    def pixel_to_hex_coord(self, pixel_pos) -> Hex:
         M = self.orientation
-        pt = Point(
-            (p.x - self.origin.x) / self.size.x,
-            (p.y - self.origin.y) / self.size.y,
-        )
-        q1 = M.b0 * pt.x + M.b1 * pt.y
-        r1 = M.b2 * pt.x + M.b3 * pt.y
+        x, y = pixel_pos
+        pt_x = (x - self.origin.x) / self.size.x
+        pt_y = (y - self.origin.y) / self.size.y
+
+        q1 = M.b0 * pt_x + M.b1 * pt_y
+        r1 = M.b2 * pt_x + M.b3 * pt_y
         s1 = -q1 - r1
 
-        return fractional_to_int_hex(q1, r1, s1)
+        return fractional_to_int(q1, r1, s1)
+    
+    def pixel_to_hex(self, pixel_pos):
+        coords = self.pixel_to_hex_coord(pixel_pos)
+        return Hex(coords)
+    
 
     
-    def get_corner_offset(self, corner: int) -> Point:
+    def get_corner_offset(self, corner: int) -> (int, int):
         angle_deg = 60 * corner + self.orientation.start_angle
         angle_rad = radians(angle_deg)
-        x = self.size.x * cos(angle_rad)
-        y = self.size.y * sin(angle_rad)
+        x = self.size[0] * cos(angle_rad)
+        y = self.size[1] * sin(angle_rad)
 
         x += self.skew * y
-        return Point(x, y)
+        return (x, y)
     
-    def get_hex_verticies(self, p: Point) -> List[Point]:
+    def get_hex_verticies(self, p: Point) -> List[(int, int)]:
         verticies = []
         for corner in range(6):
             offset = self.get_corner_offset(corner)
-            vertex = Point(p.x + offset.x, p.y + offset.y)
+            vertex = (p[0] + offset[0], p[1] + offset[1])
             verticies.append(vertex)
         return verticies
     
