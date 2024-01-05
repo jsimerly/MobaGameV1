@@ -1,6 +1,6 @@
 from typing import Optional
 from map.tiles.game_tile import GameTile
-from map.tiles.tile_effect import OnEnterTileEffect, OnEndOfTurnTileEffect
+from abilities.tile_effect import OnEnterTileEffect, OnEndOfTurnTileEffect
 from abilities.buffs_debuffs import DamageOverTime
 from entity.entity import Entity
 

@@ -3,8 +3,7 @@ from team.team import Team
 from map.game_map import GameMap
 from entity.entity import Entity
 from typing import TYPE_CHECKING
-from game_events import GameEventHandler, GameEvents
-from game_object import GameObject
+from .game_object import GameObject
 
 if TYPE_CHECKING:
     from map.tiles.game_tile import GameTile
@@ -17,7 +16,6 @@ class GameManager(GameObject):
         self.team_1 = Team(team_id=1)
         self.team_2 = Team(team_id=2)
         self.game_map: GameMap = None
-        
 
         self.selected_tile: GameTile = None
 
@@ -65,6 +63,27 @@ class GameManager(GameObject):
             axial_coord = (hex.q, hex.r)
             tile = self.game_map.tiles[axial_coord]
             tile.draw()
+
+    def start_of_game(self):
+        self.team_1.start_of_game()
+        self.team_2.start_of_game()
+
+    def turn_processing(self):
+        self.team_1.turn_processing()
+        self.team_2.turn_processing()
+
+    def animate_turn(self):
+        self.team_1.animate_turn()
+        self.team_2.animate_turn()
+        self.game_map.animate_turn()
+
+    def post_death_actions(self):
+        self.game_map.animate_turn()
+
+    def end_of_turn(self):
+        self.team_1.end_of_turn()
+        self.team_2.end_of_turn()
+        self.game_map.end_of_turn()
 
 
     

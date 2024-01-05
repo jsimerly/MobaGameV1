@@ -111,15 +111,29 @@ class Character(Entity):
     def set_sprite_component(self, sprite_component: SpriteComponent):
         self.sprite_component = sprite_component
 
-    def queue_movement(self):
+    def process_queue(self):
+        pass
+        #this will probably entail stacking up different abilities and their effects into the proper phase. As the user will only be queueing the ability then once we hit processing then we need to split it out into movement, precombat,
+    
+    def turn_processing(self):
+        self.process_queue()
+        
+
+    def start_of_queue_phase(self):
         pass
 
-    def queue_ability(self):
+    def movement_processing(self):
+        pass
+    
+    def pre_combat_processing(self):
+        pass
+    
+    def combat_processing(self):
+        pass
+        
+    def animate_turn(self):
         pass
 
-    def use_ability_slot(self):
-        pass
-
-    def activate_passive(self):
+    def end_of_turn(self):
         pass
 

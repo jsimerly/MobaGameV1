@@ -1,13 +1,14 @@
 from hex import Hex, Layout
 from typing import Callable, Optional, List
 from entity.entity import Entity
-from map.tiles.tile_effect import *
+from abilities.tile_effect import *
 from settings import LIGHT_GREY
 import pygame as pg
+from game.game_object import GameObject
 
 pg.font.init()
 
-class GameTile(Hex):
+class GameTile(Hex, GameObject):
     def __init__(self, 
         q:int, r:int,
         layout: Layout,

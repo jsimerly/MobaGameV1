@@ -1,11 +1,11 @@
-from map.map_objects.base import MapObject
+from entity.entity import Entity
 from typing import Callable
 from abilities.status_effects import Slow, Stun, Blind, Root
 from components import AbilityComponent, HealthComponent, VisionComponent
 from abilities.ability import Ability
 
 
-class StructureBase(MapObject):
+class StructureBase(Entity):
     def __init__(self,
         name:str,
         health:int,
