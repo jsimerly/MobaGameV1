@@ -2,6 +2,7 @@ from __future__ import annotations
 from typing import Dict, List, TYPE_CHECKING
 if TYPE_CHECKING:
     from entity.character import Character
+    from map.tiles.game_tile import GameTile
 
 
 class Team:
@@ -9,6 +10,7 @@ class Team:
         self.team_id = team_id
         self.color: (int, int, int) = (0,0,0)
         self.characters: List[Character] = []
+        self.vision_of: List[GameTile] = []
 
     def add_character(self, character_instance:Character):
         self.characters.append(character_instance)

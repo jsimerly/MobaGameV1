@@ -1,6 +1,6 @@
-from abc import ABC
+from game.game_object import GameObject
 
-class StatusEffect(ABC):
+class StatusEffect(GameObject):
     def __init__(self, duration:int=None):
         self.duration = duration or 1
 

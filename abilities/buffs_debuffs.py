@@ -1,8 +1,8 @@
 from __future__ import annotations
-from abc import ABC
+from game.game_object import GameObject
 from typing import Callable
 
-class Buff(ABC):
+class Buff(GameObject):
     def __init__(self, name: str, is_debuff: bool = False, is_stacking: bool = False, max_stacks: int = None, max_stack_effect: Callable = None, affected_abilities=None, duration: int = 1):
         self.name = name
         self.is_debuff = is_debuff

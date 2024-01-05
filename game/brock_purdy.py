@@ -3,11 +3,13 @@ from team.team import Team
 from map.game_map import GameMap
 from entity.entity import Entity
 from typing import TYPE_CHECKING
+from game_events import GameEventHandler, GameEvents
+from game_object import GameObject
 
 if TYPE_CHECKING:
     from map.tiles.game_tile import GameTile
 
-class GameManager:
+class GameManager(GameObject):
     def __init__(self):
         self.player_1 = None
         self.player_2 = None
@@ -15,6 +17,7 @@ class GameManager:
         self.team_1 = Team(team_id=1)
         self.team_2 = Team(team_id=2)
         self.game_map: GameMap = None
+        
 
         self.selected_tile: GameTile = None
 
@@ -55,7 +58,7 @@ class GameManager:
             selected_tile.set_selected()
 
     def deselect_tile(self, deselected_tile: GameTile):
-        hex_neighbors =  self.selected_tile.get_all_neighors()
+        hex_neighbors =  deselected_tile.get_all_neighors()
         self.selected_tile.deselect()
 
         for hex in hex_neighbors:
@@ -63,6 +66,12 @@ class GameManager:
             tile = self.game_map.tiles[axial_coord]
             tile.draw()
 
+
+    
+
+
+
+        
 
 
    

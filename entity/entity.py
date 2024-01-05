@@ -4,7 +4,8 @@ from components.vision import VisionComponent
 from components.sprite import  SpriteComponent
 from components.map_interaction import MapInteractionComponent
 from components.team_component import TeamComponent
-class Entity:
+from game.game_object import GameObject
+class Entity(GameObject):
     def __init__(self) -> None:
         self.axial_cord: (int, int)= None
         self.health_component: HealthComponent = None
